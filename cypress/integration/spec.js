@@ -17,9 +17,7 @@ describe("page", () => {
     };
 
     cy.route2(intercept, response).as("gql");
-    cy.visit(
-      "https://mapstaging.tacklehunger.org/donate?site=recOJoeAptDHrjhOC"
-    );
+    cy.visit("https://map.tacklehunger.org/donate?site=recOJoeAptDHrjhOC");
     cy.wait("@gql").then((request) => console.log(request));
   });
   it("with NON-mocked cy.route2 respone, there is a request body in cy.wait", () => {
@@ -28,9 +26,7 @@ describe("page", () => {
       pathname: "/graphql",
     };
     cy.route2(intercept).as("gql");
-    cy.visit(
-      "https://mapstaging.tacklehunger.org/donate?site=recOJoeAptDHrjhOC"
-    );
+    cy.visit("https://map.tacklehunger.org/donate?site=recOJoeAptDHrjhOC");
     cy.wait("@gql").then((request) => console.log(request));
   });
 });
