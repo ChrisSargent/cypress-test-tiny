@@ -23,3 +23,48 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+function routeGql(operationName, responseData) {
+  const matcher = {
+    headers: {
+      // Identity the graphql request based on the header
+      "x-gql-operation-name": operationName,
+    },
+    method: "POST",
+    pathname: "/graphql",
+  };
+
+  cy.route2(matcher, (request) => {
+    // responseData could be 0 or false so check for undefined
+    if (responseData === undefined) {
+      // Not mocked, send the request to the server
+      request.reply();
+    } else {
+      const parsedBody = JSON.parse(request.body);
+      const response = {
+        body: {
+          data: {
+            [operationName]:
+              typeof responseData === "function"
+                ? responseData(parsedBody.variables)
+                : responseData,
+          },
+        },
+      };
+      // Reply with mock without making external request
+      request.reply(response);
+    }
+  }).as(operationName);
+}
+Cypress.Commands.add("routeGql", routeGql);
+
+beforeEach(() => {
+  /**
+   * Setup some default network responses:
+   */
+
+  // EpicPayJWT - return a different JWT based on the donationType
+  cy.routeGql("epicPayJWT", (variables) =>
+    variables.donationType === "giftCard" ? "mockGiftCardJWT" : "mockDirectJWT"
+  );
+});

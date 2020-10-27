@@ -1,32 +1,22 @@
 /// <reference types="cypress" />
-describe("page", () => {
-  it("with mocked cy.route2 respone, there is no request body in cy.wait", () => {
-    const intercept = {
-      method: "POST",
-      pathname: "/graphql",
-    };
-    const response = {
-      body: {
-        data: {
-          hello: "world",
-        },
-      },
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-    };
 
-    cy.route2(intercept, response).as("gql");
-    cy.visit("https://map.tacklehunger.org/donate?site=recOJoeAptDHrjhOC");
-    cy.wait("@gql").then((request) => console.log(request));
+describe("Donations Page UI", () => {
+  it("Disables cash option for a non-Merchant Site", () => {
+    cy.visit("https://map.tacklehunger.org/donate?site=recztyRtmqwnzFPG2");
+    cy.wait("@epicPayJWT");
+
+    // Check the cash button is disabled
+    cy.get("form").within(() => {
+      cy.contains("Cash").should("be.disabled");
+    });
   });
-  it("with NON-mocked cy.route2 respone, there is a request body in cy.wait", () => {
-    const intercept = {
-      method: "POST",
-      pathname: "/graphql",
-    };
-    cy.route2(intercept).as("gql");
-    cy.visit("https://map.tacklehunger.org/donate?site=recOJoeAptDHrjhOC");
-    cy.wait("@gql").then((request) => console.log(request));
+});
+
+describe("Donations Page Requests", () => {
+  beforeEach(() => {});
+
+  it("Makes a direct donation using a card", () => {
+    cy.visit("https://map.tacklehunger.org/donate?site=recztyRtmqwnzFPG2");
+    cy.wait("@epicPayJWT");
   });
 });
