@@ -26,10 +26,6 @@
 
 function routeGql(operationName, responseData) {
   const matcher = {
-    headers: {
-      // Identity the graphql request based on the header
-      "x-gql-operation-name": operationName,
-    },
     method: "POST",
     pathname: "/graphql",
   };
